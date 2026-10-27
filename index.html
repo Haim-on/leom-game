@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>קיר הגורלות - סמלי מדינת ישראל</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;900&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root {
+  --primary: #1e3a8a;
+  --primary-light: #3b82f6;
+  --accent-zionist: #2563eb;
+  --accent-brigade: #ea580c;
+  --bg-gradient: radial-gradient(circle at 50% 20%, #1e293b 0%, #0f172a 100%);
+  --card-bg: rgba(255, 255, 255, 0.95);
+  --text-main: #0f172a;
+  --text-muted: #475569;
+}
+
+html,body{width:100%;min-height:100vh;background:var(--bg-gradient);font-family:'Heebo',sans-serif;color:var(--text-main);overflow-x:hidden;}
+
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 80% 20%, rgba(37,99,235,0.15) 0%, transparent 40%), radial-gradient(circle at 20% 80%, rgba(234,88,12,0.1) 0%, transparent 40%);pointer-events:none;z-index:0;}
+
+.app-container{position:relative;z-index:1;width:100%;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
+
+.header{text-align:center;margin-bottom:25px;}
+.header h1{font-size:clamp(2rem,4vw,3rem);font-weight:900;color:#ffffff;letter-spacing:-0.03em;text-shadow:0 4px 12px rgba(0,0,0,0.3);}
+.header p{font-size:1.1rem;color:#94a3b8;margin-top:6px;font-weight:500;}
+
+.panel{display:none;width:100%;max-width:900px;background:var(--card-bg);border:1px solid rgba(255,255,255,0.2);border-radius:28px;padding:35px;box-shadow:0 25px 50px -12px rgba(0, 0, 0, 0.5);backdrop-filter:blur(16px);animation:fadeIn 0.3s ease-out;}
+.panel.active{display:block;}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.btn{width:100%;padding:16px 28px;font-size:1.15rem;font-weight:700;border:none;border-radius:16px;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;cursor:pointer;box-shadow:0 10px 25px rgba(37,99,235,0.3);transition:all 0.25s ease;}
+.btn:hover{transform:translateY(-2px);box-shadow:0 15px 30px rgba(37,99,235,0.4);filter:brightness(1.05);}
+.btn:active{transform:translateY(0);}
+.btn:disabled{background:#94a3b8;cursor:not-allowed;transform:none;box-shadow:none;filter:none;}
+.btn-danger{background:linear-gradient(135deg,#dc2626,#991b1b);box-shadow:0 10px 25px rgba(220,38,38,0.3);}
+
+.input-field{width:100%;padding:16px 20px;border-radius:14px;border:2px solid #cbd5e1;background:#f8fafc;color:var(--text-main);font-size:1.15rem;margin-bottom:20px;font-family:'Heebo',sans-serif;outline:none;transition:all 0.2s;}
+.input-field:focus{border-color:var(--accent-zionist);background:#fff;box-shadow:0 0 0 4px rgba(37,99,235,0.15);}
+
+.teams-grid{display:flex;gap:20px;margin:25px 0;}
+.team-card{flex:1;border:2.5px solid #cbd5e1;border-radius:20px;padding:22px;text-align:center;background:#fff;cursor:pointer;transition:all 0.25s ease;}
+.team-card:hover{border-color:#94a3b8;transform:translateY(-2px);}
+.team-card.zionist.selected{border-color:var(--accent-zionist);background:rgba(37,99,235,0.06);box-shadow:0 10px 25px rgba(37,99,235,0.15);}
+.team-card.brigade.selected{border-color:var(--accent-brigade);background:rgba(234,88,12,0.06);box-shadow:0 10px 25px rgba(234,88,12,0.15);}
+.team-card h3{font-size:1.3rem;font-weight:700;margin-top:8px;}
+
+/* Wall of Fates Grid */
+.fates-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:20px;}
+.door{background:linear-gradient(135deg,#1e3a8a,#2563eb);color:#fff;border-radius:14px;height:95px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:0.95rem;font-weight:700;cursor:pointer;text-align:center;padding:8px;box-shadow:0 6px 15px rgba(30,58,138,0.25);transition:all 0.3s;border:2px solid rgba(255,255,255,0.2);}
+.door:hover{transform:translateY(-3px);box-shadow:0 10px 25px rgba(37,99,235,0.35);filter:brightness(1.1);}
+.door.opened{background:#e2e8f0;color:#334155;cursor:default;transform:none;box-shadow:none;border-color:#cbd5e1;}
+.door.opened.positive{background:#dcfce7;color:#166534;border-color:#86efac;font-size:1.05rem;}
+.door.opened.negative{background:#fee2e2;color:#991b1b;border-color:#fca5a5;font-size:1.05rem;}
+
+.options-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:20px;}
+.option-btn{padding:18px;font-size:1.1rem;font-weight:700;border:2px solid #cbd5e1;border-radius:16px;background:#fff;color:var(--text-main);cursor:pointer;transition:all 0.2s;text-align:center;}
+.option-btn:hover{border-color:var(--accent-zionist);background:#eff6ff;transform:translateY(-2px);}
+.option-btn:disabled{background:#e2e8f0;color:#94a3b8;cursor:not-allowed;transform:none;}
+
+.stats-row{display:flex;justify-content:space-around;background:#f8fafc;padding:18px;border-radius:16px;margin:20px 0;border:1px solid #e2e8f0;font-weight:700;font-size:1.2rem;}
+</style>
+</head>
+<body>
+<div class="app-container">
+  <div class="header">
+    <h1>🏛️ קיר הגורלות</h1>
+    <p>סמלי מדינת ישראל - משחק חי לכיתה</p>
+  </div>
+
+  <!-- Role Selection Panel -->
+  <div id="role-panel" class="panel active" style="text-align:center;max-width:520px;">
+    <h2 style="color:var(--primary);margin-bottom:12px;font-size:1.8rem;">בחר את מצב הכניסה</h2>
+    <p style="margin-bottom:30px;color:var(--text-muted);font-size:1.1rem;">האם אתה מורה (מארח) או צוער (משתתף מהנייד)?</p>
+    <div style="display:flex;gap:15px;">
+      <button class="btn" onclick="enterHostMode()">מארח (מסך ראשי)</button>
+      <button class="btn" style="background:linear-gradient(135deg,#0ea5e9,#0284c7);" onclick="enterCadetMode()">צוער (מהנייד)</button>
+    </div>
+  </div>
+
+  <!-- Cadet Join Panel -->
+  <div id="cadet-join-panel" class="panel" style="max-width:520px;">
+    <h2 style="color:var(--primary);margin-bottom:15px;text-align:center;font-size:1.8rem;">כניסת צוער למשחק</h2>
+    <input type="text" id="cadet-name" class="input-field" placeholder="הכנס את שמך המלא">
+    <p style="margin-bottom:12px;font-weight:700;color:var(--text-main);font-size:1.1rem;">בחר קבוצה:</p>
+    <div class="teams-grid">
+      <div class="team-card zionist" onclick="selectTeam('zionist')" id="box-zionist">
+        <span style="font-size:2rem;">🔵</span>
+        <h3 style="color:var(--accent-zionist);">התנועה הציונית</h3>
+      </div>
+      <div class="team-card brigade" onclick="selectTeam('brigade')" id="box-brigade">
+        <span style="font-size:2rem;">🟠</span>
+        <h3 style="color:var(--accent-brigade);">הבריגדה היהודית</h3>
+      </div>
+    </div>
+    <button class="btn" style="margin-top:10px;" onclick="joinGameSubmit()">הצטרף למשחק!</button>
+    <button class="btn" style="background:transparent;color:var(--text-muted);box-shadow:none;margin-top:10px;" onclick="backToRoleSelect()">⬅ חזרה בחירת תפקיד</button>
+  </div>
+
+  <!-- Cadet Waiting / Playing Panel -->
+  <div id="cadet-waiting-panel" class="panel" style="max-width:650px;text-align:center;">
+    <h2 id="cadet-main-title" style="color:var(--primary);margin-bottom:15px;font-size:1.8rem;">ממתין לתחילת המשחק...</h2>
+    <p id="cadet-status-text" style="color:var(--text-muted);font-size:1.2rem;margin-bottom:20px;"></p>
+    <div id="cadet-question-container" style="display:none;text-align:right;">
+      <div id="cadet-q-text" style="font-size:1.35rem;font-weight:700;color:var(--primary);margin-bottom:20px;background:#f8fafc;padding:20px;border-radius:16px;border:1px solid #e2e8f0;"></div>
+      <div class="options-grid" id="cadet-options-grid"></div>
+    </div>
+    <div id="cadet-spinner" style="font-size:3.5rem;margin:20px 0;animation:pulse 1.5s infinite;">⏳</div>
+  </div>
+
+  <!-- Host Dashboard Panel -->
+  <div id="host-panel" class="panel">
+    <h2 style="color:var(--primary);margin-bottom:20px;font-size:1.8rem;">לוח בקרה - מארח</h2>
+    <div class="teams-grid">
+      <div class="team-card zionist" style="cursor:default;">
+        <h3 style="color:var(--accent-zionist);">התנועה הציונית</h3>
+        <p id="count-zionist" style="font-size:3rem;font-weight:900;color:var(--accent-zionist);margin-top:10px;">0</p>
+        <p style="font-size:0.9rem;color:var(--text-muted);margin-top:5px;">צוערים מחוברים</p>
+      </div>
+      <div class="team-card brigade" style="cursor:default;">
+        <h3 style="color:var(--accent-brigade);">הבריגדה היהודית</h3>
+        <p id="count-brigade" style="font-size:3rem;font-weight:900;color:var(--accent-brigade);margin-top:10px;">0</p>
+        <p style="font-size:0.9rem;color:var(--text-muted);margin-top:5px;">צוערים מחוברים</p>
+      </div>
+    </div>
+    <div id="host-warning" style="color:#dc2626;font-weight:700;text-align:center;margin:15px 0;font-size:1.1rem;background:#fee2e2;padding:12px;border-radius:12px;display:none;">⚠️ נדרשים לפחות 2 צוערים מחוברים כדי להתחיל את המשחק!</div>
+    <div style="display:flex;gap:15px;margin-top:25px;">
+      <button class="btn" id="start-btn" style="flex:2;" onclick="startTriviaPhase()" disabled>התחל משחק ▶</button>
+      <button class="btn btn-danger" style="flex:1;" onclick="resetGameServer()">איפוס משחק 🔄</button>
+    </div>
+  </div>
+
+  <!-- Host Live Trivia Panel -->
+  <div id="host-trivia-panel" class="panel" style="text-align:center;">
+    <h2 style="color:var(--primary);margin-bottom:10px;font-size:1.8rem;" id="trivia-round-title">שאלת הפתעה בלייב</h2>
+    <p id="target-cadet-announcement" style="color:#0284c7;font-weight:700;font-size:1.25rem;margin-bottom:20px;"></p>
+    <div id="live-question-box" style="margin:20px 0;font-size:1.4rem;font-weight:700;color:var(--primary);background:#f8fafc;padding:25px;border-radius:18px;border:1px solid #e2e8f0;">טוען שאלה...</div>
+    <div class="stats-row">
+      <div style="color:var(--accent-zionist);">מפתחות ציונית: <span id="host-keys-zionist">0</span></div>
+      <div style="color:var(--accent-brigade);">מפתחות בריגדה: <span id="host-keys-brigade">0</span></div>
+    </div>
+    <div style="display:flex;gap:15px;margin-top:20px;">
+      <button class="btn" style="flex:2;" onclick="nextTriviaRound()">הגרל צוער לשאלה הבאה ➡</button>
+      <button class="btn btn-danger" style="flex:1;" onclick="resetGameServer()">איפוס 🔄</button>
+    </div>
+  </div>
+
+  <!-- Wall of Fates Host Panel -->
+  <div id="wall-panel" class="panel">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
+      <h2 style="color:var(--primary);font-size:1.8rem;">🏛️ קיר הגורלות</h2>
+      <div style="display:flex;gap:25px;font-weight:700;font-size:1.2rem;">
+        <span style="color:var(--accent-zionist);">ניקוד ציונית: <span id="score-zionist">0</span></span>
+        <span style="color:var(--accent-brigade);">ניקוד בריגדה: <span id="score-brigade">0</span></span>
+      </div>
+    </div>
+    <p id="wall-status-instruction" style="color:var(--text-muted);margin-bottom:15px;font-weight:700;text-align:center;font-size:1.15rem;background:#f8fafc;padding:12px;border-radius:12px;border:1px solid #e2e8f0;"></p>
+    <div class="fates-grid" id="fates-grid"></div>
+    <div style="margin-top:25px;text-align:center;">
+      <button class="btn btn-danger" style="max-width:250px;" onclick="resetGameServer()">איפוס משחק 🔄</button>
+    </div>
+  </div>
+
+  <!-- Victory Panel -->
+  <div id="victory-panel" class="panel" style="text-align:center;">
+    <h2 style="font-size:2.8rem;color:var(--primary);margin-bottom:15px;">🏆 המשחק הסתיים! 🏆</h2>
+    <p id="victory-announcement" style="font-size:2rem;font-weight:900;margin:25px 0;"></p>
+    <div style="font-size:4.5rem;margin:20px 0;">🎉🥇🎉</div>
+    <div style="margin-top:30px;">
+      <button class="btn" style="max-width:300px;" onclick="resetGameServer()">שחק שוב מהתחלה 🔄</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDK & Game Logic -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBCtuW6-8bbUtlDeTYEAY_mA212Mr_LuNw",
+  authDomain: "haim-leom.firebaseapp.com",
+  projectId: "haim-leom",
+  storageBucket: "haim-leom.firebasestorage.app",
+  messagingSenderId: "743968217974",
+  appId: "1:743968217974:web:c623469cc7d592606a3857",
+  measurementId: "G-EE1PJYCWEW"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+window.db = db;
+window.selectedTeam = null;
+
+let totalPlayersCount = 0;
+let isHost = false;
+
+// Robust Device ID Persistence
+let deviceId = localStorage.getItem('haim_game_device_id');
+if (!deviceId) {
+  deviceId = 'dev_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  localStorage.setItem('haim_game_device_id', deviceId);
+}
+
+// Web Audio API Sound Generator
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playSound(type) {
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  const now = audioCtx.currentTime;
+
+  if (type === 'success') {
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(440, now);
+    osc.frequency.setValueAtTime(554.37, now + 0.1);
+    osc.frequency.setValueAtTime(659.25, now + 0.2);
+    gain.gain.setValueAtTime(0.25, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+    osc.start(now); osc.stop(now + 0.5);
+  } else if (type === 'error') {
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(220, now);
+    osc.frequency.setValueAtTime(150, now + 0.15);
+    gain.gain.setValueAtTime(0.3, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+    osc.start(now); osc.stop(now + 0.4);
+  } else if (type === 'click') {
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(600, now);
+    gain.gain.setValueAtTime(0.1, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+    osc.start(now); osc.stop(now + 0.08);
+  } else if (type === 'reveal') {
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(300, now);
+    osc.frequency.setValueAtTime(450, now + 0.15);
+    gain.gain.setValueAtTime(0.2, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+    osc.start(now); osc.stop(now + 0.6);
+  }
+}
+
+const triviaQuestions = [
+  { q: "באיזו שנה עוגנה 'התקווה' רשמית בחוק בישראל?", options: ["2004", "1948", "1984", "1967"], correct: 0 },
+  { q: "מי עיצב את דגל ישראל במתכונתו הנוכחית המבוססת על טלית?", options: ["דוד וולפסון", "בנימין זאב הרצל", "נפתלי הרץ אימבר", "חיים ויצמן"], correct: 0 },
+  { q: "מי חיבר את מילות השיר 'התקווה'?", options: ["אלכסנדר פן", "נפתלי הרץ אימבר", "רחל המשוררת", "חיים נחמן ביאליק"], correct: 1 },
+  { q: "היכן עוצב לראשונה דגל הקונגרס הציוני הדומה לדגל המדינה?", options: ["בזל, שוויץ", "ראשון לציון", "וילנה, ליטא", "פרג, צ'כיה"], correct: 1 },
+  { q: "מהו צבע הרקע המקורי של סמל מדינת ישראל (מנורה ושני ענפי זית)?", options: ["כחול כהה", "ירוק", "זהב על רקע כחול/אפור", "אדום"], correct: 2 },
+  { q: "איזו יחידה עברית התנדבה לצבא הבריטי במלחמת העולם השנייה ונלחמה תחת דגל משלה?", options: ["הבריגדה היהודית", "הפלמ"ח", "הגדוד העברי הראשון", "לח"י"], correct: 0 }
+];
+
+const historicalFigures = [
+  "בנימין זאב הרצל", "חיים ויצמן", "דוד בן-גוריון", "גולדה מאיר", "זאב ז'בוטינסקי",
+  "אליעזר בן-יהודה", "שרה אהרנסון", "יוסף טרומפלדור", "רחל המשוררת", "חיים נחמן ביאליק",
+  "מנחם בגין", "יצחק רבין", "משה דיין", "אבא אבן", "הרב אברהם קוק",
+  "הנרייטה סאלד", "משה שרת", "יצחק בן-צבי", "אליהו חכים", "חנה סנש",
+  "אבא קובנר", "מאיר דיזנגוף", "יגאל ידין", "הרב שלמה גורן", "אחד העם"
+];
+
+const doorValues = [150, 200, -100, 300, 50, -50, 250, 100, -150, 400, 300, -200, 150, 500, -100, 200, 100, -50, 250, 300, 150, -200, 100, 200, 350];
+
+// Navigation helpers
+function showPanel(panelId) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(panelId).classList.add('active');
+}
+
+window.enterHostMode = async function() {
+  playSound('click');
+  isHost = true;
+  showPanel('host-panel');
+  initHostListeners();
+  initGameStateListener();
+};
+
+window.enterCadetMode = function() {
+  playSound('click');
+  isHost = false;
+  showPanel('cadet-join-panel');
+};
+
+window.backToRoleSelect = function() {
+  playSound('click');
+  showPanel('role-panel');
+};
+
+window.selectTeam = function(team) {
+  window.selectedTeam = team;
+  playSound('click');
+  document.getElementById('box-zionist').classList.toggle('selected', team === 'zionist');
+  document.getElementById('box-brigade').classList.toggle('selected', team === 'brigade');
+};
+
+window.joinGameSubmit = async function() {
+  const nameInput = document.getElementById('cadet-name');
+  const name = nameInput ? nameInput.value.trim() : '';
+  
+  if (!name) {
+    alert('אנא הכנס את שמך המלא!');
+    return;
+  }
+  if (!window.selectedTeam) {
+    alert('אנא בחר קבוצה!');
+    return;
+  }
+
+  playSound('click');
+  try {
+    await setDoc(doc(db, "players", deviceId), {
+      name: name,
+      team: window.selectedTeam,
+      joinedAt: Date.now()
+    }, { merge: true });
+    
+    showPanel('cadet-waiting-panel');
+    document.getElementById('cadet-main-title').innerText = `שלום ${name}!`;
+    document.getElementById('cadet-status-text').innerText = "מחובר בהצלחה לקבוצה! ממתין שהמארח יתחיל את המשחק...";
+    
+    initGameStateListener();
+    initCadetQuestionListener();
+  } catch (e) {
+    alert('שגיאה בהתחברות לשרת: ' + e.message);
+  }
+};
+
+function initHostListeners() {
+  onSnapshot(collection(db, "players"), (snapshot) => {
+    let z0 = 0, b0 = 0;
+    snapshot.forEach(docSnap => {
+      const d = docSnap.data();
+      if (d.team === 'zionist') z0++;
+      if (d.team === 'brigade') b0++;
+    });
+    totalPlayersCount = z0 + b0;
+    const cz = document.getElementById('count-zionist');
+    const cb = document.getElementById('count-brigade');
+    if (cz) cz.innerText = z0;
+    if (cb) cb.innerText = b0;
+
+    const startBtn = document.getElementById('start-btn');
+    const warning = document.getElementById('host-warning');
+    if (startBtn && warning) {
+      if (totalPlayersCount >= 2) {
+        startBtn.disabled = false;
+        warning.style.display = 'none';
+      } else {
+        startBtn.disabled = true;
+        warning.style.display = 'block';
+      }
+    }
+  });
+}
+
+function initGameStateListener() {
+  onSnapshot(doc(db, "gamestate", "current"), async (docSnap) => {
+    if (!docSnap.exists()) {
+      // Auto-heal missing gamestate
+      await setDoc(doc(db, "gamestate", "current"), {
+        phase: 'waiting',
+        keysZionist: 0,
+        keysBrigade: 0,
+        scoreZionist: 0,
+        scoreBrigade: 0,
+        currentQuestionIndex: 0,
+        openedDoors: {}
+      });
+      return;
+    }
+
+    const data = docSnap.data();
+    
+    if (document.getElementById('host-keys-zionist')) {
+      document.getElementById('host-keys-zionist').innerText = data.keysZionist || 0;
+      document.getElementById('host-keys-brigade').innerText = data.keysBrigade || 0;
+    }
+    if (document.getElementById('score-zionist')) {
+      document.getElementById('score-zionist').innerText = data.scoreZionist || 0;
+      document.getElementById('score-brigade').innerText = data.scoreBrigade || 0;
+    }
+
+    if (data.phase === 'waiting') {
+      if (isHost) {
+        showPanel('host-panel');
+      } else {
+        // Cadet is in waiting room
+        if (document.getElementById('cadet-waiting-panel').classList.contains('active') === false &&
+            document.getElementById('cadet-join-panel').classList.contains('active') === false) {
+          // If already joined, show waiting
+          showPanel('cadet-waiting-panel');
+        }
+      }
+    } else if (data.phase === 'trivia') {
+      if (isHost) {
+        showPanel('host-trivia-panel');
+      } else {
+        showPanel('cadet-waiting-panel');
+        document.getElementById('cadet-main-title').innerText = "סבב שאלות הפתעה";
+      }
+    } else if (data.phase === 'wall') {
+      if (isHost) {
+        showPanel('wall-panel');
+        renderWallGrid(data);
+      } else {
+        showPanel('cadet-waiting-panel');
+        document.getElementById('cadet-main-title').innerText = "🏛️ קיר הגורלות נפתח!";
+        document.getElementById('cadet-status-text').innerText = "הביטו למסך המרכזי כדי לראות את בחירת הדלתות!";
+        document.getElementById('cadet-question-container').style.display = 'none';
+        document.getElementById('cadet-spinner').style.display = 'block';
+      }
+    } else if (data.phase === 'victory') {
+      showPanel('victory-panel');
+      const zScore = data.scoreZionist || 0;
+      const bScore = data.scoreBrigade || 0;
+      const vicText = document.getElementById('victory-announcement');
+      if (vicText) {
+        if (zScore > bScore) {
+          vicText.innerHTML = "🏆 המנצחת הגדולה היא: <span style='color:var(--accent-zionist);'>התנועה הציונית!</span> 🔵";
+        } else if (bScore > zScore) {
+          vicText.innerHTML = "🏆 המנצחת הגדולה היא: <span style='color:var(--accent-brigade);'>הבריגדה היהודית!</span> 🟠";
+        } else {
+          vicText.innerHTML = "🤝 שוויון מוחלט בין שתי הקבוצות!";
+        }
+      }
+    }
+  });
+}
+
+function initCadetQuestionListener() {
+  onSnapshot(doc(db, "gamestate", "current"), (docSnap) => {
+    if (!docSnap.exists()) return;
+    const data = docSnap.data();
+    if (data.phase === 'trivia' && data.currentQuestionIndex !== undefined) {
+      const qIdx = data.currentQuestionIndex;
+      const targetCadet = data.targetCadetId;
+      
+      const announcement = document.getElementById('target-cadet-announcement');
+      if (announcement && data.targetCadetName) {
+        announcement.innerText = `שאלה סבב ${qIdx + 1}/6 הוגרלה לצוער: ${data.targetCadetName}`;
+      }
+      
+      if (targetCadet === deviceId) {
+        document.getElementById('cadet-main-title').innerText = "❗ השאלה הוגרלה אליך! ענה מהר:";
+        document.getElementById('cadet-status-text').innerText = "";
+        document.getElementById('cadet-spinner').style.display = 'none';
+        
+        const qObj = triviaQuestions[qIdx];
+        document.getElementById('cadet-q-text').innerText = qObj.q;
+        
+        const grid = document.getElementById('cadet-options-grid');
+        grid.innerHTML = '';
+        qObj.options.forEach((opt, idx) => {
+          const btn = document.createElement('button');
+          btn.className = 'option-btn';
+          btn.innerText = opt;
+          btn.onclick = () => answerQuestion(idx, qObj.correct);
+          grid.appendChild(btn);
+        });
+        document.getElementById('cadet-question-container').style.display = 'block';
+      } else {
+        document.getElementById('cadet-main-title').innerText = "ממתין לתוצאות השאלה...";
+        document.getElementById('cadet-status-text').innerText = data.targetCadetName ? `השאלה הוגרלה אל: ${data.targetCadetName}` : "";
+        document.getElementById('cadet-question-container').style.display = 'none';
+        document.getElementById('cadet-spinner').style.display = 'block';
+      }
+    }
+  });
+}
+
+window.answerQuestion = async function(chosenIdx, correctIdx) {
+  playSound('click');
+  const buttons = document.querySelectorAll('.option-btn');
+  buttons.forEach(b => b.disabled = true);
+  
+  const isCorrect = (chosenIdx === correctIdx);
+  if (isCorrect) {
+    playSound('success');
+    alert('כל הכבוד! תשובה נכונה! 🌟 (מפתח נוסף לקבוצה)');
+  } else {
+    playSound('error');
+    alert('שגיאה! תשובה שגויה. ❌');
+  }
+
+  const playerSnap = await getDoc(doc(db, "players", deviceId));
+  if (playerSnap.exists()) {
+    const playerTeam = playerSnap.data().team;
+    const snap = await getDoc(doc(db, "gamestate", "current"));
+    if (snap.exists()) {
+      const data = snap.data();
+      let z = data.keysZionist || 0;
+      let b = data.keysBrigade || 0;
+      if (isCorrect) {
+        if (playerTeam === 'zionist') z++;
+        else b++;
+      }
+      await setDoc(doc(db, "gamestate", "current"), {
+        keysZionist: z,
+        keysBrigade: b
+      }, { merge: true });
+    }
+  }
+
+  document.getElementById('cadet-main-title').innerText = "ממתין לסבב הבא...";
+  document.getElementById('cadet-question-container').style.display = 'none';
+  document.getElementById('cadet-spinner').style.display = 'block';
+};
+
+window.startTriviaPhase = async function() {
+  playSound('click');
+  if (totalPlayersCount < 2) {
+    alert('לא ניתן להתחיל בלי לפחות 2 צוערים מחוברים!');
+    return;
+  }
+  
+  await setDoc(doc(db, "gamestate", "current"), {
+    phase: 'trivia',
+    currentQuestionIndex: 0,
+    keysZionist: 0,
+    keysBrigade: 0,
+    scoreZionist: 0,
+    scoreBrigade: 0,
+    openedDoors: {}
+  });
+
+  showPanel('host-trivia-panel');
+  pickRandomCadet(0);
+};
+
+async function pickRandomCadet(qIdx) {
+  const querySnapshot = await getDocs(collection(db, "players"));
+  const players = [];
+  querySnapshot.forEach(d => players.push({ id: d.id, ...d.data() }));
+  
+  if (players.length === 0) return;
+  const randomPlayer = players[Math.floor(Math.random() * players.length)];
+  
+  document.getElementById('live-question-box').innerText = `שאלה ${qIdx + 1}: ${triviaQuestions[qIdx].q}`;
+  
+  await setDoc(doc(db, "gamestate", "current"), {
+    currentQuestionIndex: qIdx,
+    targetCadetId: randomPlayer.id,
+    targetCadetName: randomPlayer.name
+  }, { merge: true });
+}
+
+window.nextTriviaRound = async function() {
+  playSound('click');
+  const snap = await getDoc(doc(db, "gamestate", "current"));
+  if (!snap.exists()) return;
+  const currentIdx = snap.data().currentQuestionIndex;
+  
+  if (currentIdx + 1 >= 6) {
+    await setDoc(doc(db, "gamestate", "current"), {
+      phase: 'wall',
+      openedDoors: {}
+    }, { merge: true });
+    showPanel('wall-panel');
+    renderWallGrid(snap.data());
+  } else {
+    pickRandomCadet(currentIdx + 1);
+  }
+};
+
+function renderWallGrid(data) {
+  const grid = document.getElementById('fates-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  
+  const zKeys = data.keysZionist || 0;
+  const bKeys = data.keysBrigade || 0;
+  const opened = data.openedDoors || {};
+  
+  const instruction = document.getElementById('wall-status-instruction');
+  let turnTeam = 'zionist';
+  let teamName = 'התנועה הציונית (🔵)';
+  if (zKeys === bKeys) {
+    teamName = 'הקבוצה המובילה / שוויון';
+  } else if (bKeys > zKeys) {
+    turnTeam = 'brigade';
+    teamName = 'הבריגדה היהודית (🟠)';
+  }
+  
+  if (instruction) {
+    instruction.innerText = `תור פתיחת דלת: ${teamName} (לחץ על דלת סגורה כדי לחשוף אותה)`;
+  }
+
+  for(let i=0; i<25; i++) {
+    const doorDiv = document.createElement('div');
+    doorDiv.className = 'door';
+    
+    if (opened[i] !== undefined) {
+      doorDiv.classList.add('opened');
+      const val = doorValues[i];
+      if (val > 0) {
+        doorDiv.classList.add('positive');
+        doorDiv.innerHTML = `<strong>${historicalFigures[i]}</strong><br>+${val} נק'`;
+      } else {
+        doorDiv.classList.add('negative');
+        doorDiv.innerHTML = `<strong>${historicalFigures[i]}</strong><br>${val} נק'`;
+      }
+    } else {
+      doorDiv.innerHTML = `<span>דלת ${i+1}</span><br><small style="font-size:0.75rem;opacity:0.9;">${historicalFigures[i]}</small>`;
+      doorDiv.onclick = () => revealDoor(i, turnTeam, data);
+    }
+    grid.appendChild(doorDiv);
+  }
+}
+
+async function revealDoor(doorIdx, defaultTeam, data) {
+  playSound('reveal');
+  const opened = data.openedDoors || {};
+  if (opened[doorIdx] !== undefined) return;
+  
+  opened[doorIdx] = defaultTeam;
+  
+  let zScore = data.scoreZionist || 0;
+  let bScore = data.scoreBrigade || 0;
+  const val = doorValues[doorIdx];
+  
+  if (defaultTeam === 'zionist') zScore += val;
+  else bScore += val;
+  
+  await setDoc(doc(db, "gamestate", "current"), {
+    openedDoors: opened,
+    scoreZionist: zScore,
+    scoreBrigade: bScore
+  }, { merge: true });
+  
+  if (Object.keys(opened).length >= 25) {
+    setTimeout(async () => {
+      await setDoc(doc(db, "gamestate", "current"), { phase: 'victory' }, { merge: true });
+    }, 1500);
+  } else {
+    const snap = await getDoc(doc(db, "gamestate", "current"));
+    if (snap.exists()) renderWallGrid(snap.data());
+  }
+}
+
+window.resetGameServer = async function() {
+  if (!confirm('האם אתה בטוח שברצונך לאפס את המשחק לחלוטין לכל המשתתפים?')) return;
+  playSound('click');
+  await setDoc(doc(db, "gamestate", "current"), {
+    phase: 'waiting',
+    keysZionist: 0,
+    keysBrigade: 0,
+    scoreZionist: 0,
+    scoreBrigade: 0,
+    currentQuestionIndex: 0,
+    openedDoors: {}
+  });
+  window.location.reload();
+};
+</script>
+</body>
+</html>
